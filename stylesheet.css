@@ -1,0 +1,13 @@
+:root {
+  --accent-color: rgb(255,168,7)
+}
+
+body {
+	background-color: black;
+}
+
+#canvaas {
+	margin: 10px;
+	border: solid 20px #333333;
+}
+
