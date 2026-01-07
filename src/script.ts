@@ -1,34 +1,59 @@
-var board: Array<Array<number>> = [[0,1,0,0,0,0,0,0,0,0],
-																	 [0,0,1,0,0,0,0,0,0,0],
-																	 [1,1,1,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0],
-																	 [0,0,0,0,0,0,0,0,0,0]];
+const pixel_size: number = 25;
+const board_size: number = 25;
 
-var time: number = 0;
+var board: Array<Array<number>> = Array.from({length: board_size}, () => Array(board_size).fill(0));
+
+var paused: boolean = true;
 
 var canvas: HTMLCanvasElement;
+var canvas_rect: DOMRect;
 var ctx: CanvasRenderingContext2D;
+
+var pause_signifier: HTMLSpanElement;
+var control_bar: HTMLDivElement;
 
 window.onload = function () {
   canvas = document.querySelector("#canvaas");
-  canvas.width = 500;
-  canvas.height = 500;
+	canvas_rect = canvas.getBoundingClientRect();
+  canvas.width = board_size*pixel_size;
+  canvas.height = board_size*pixel_size;
   ctx = canvas.getContext("2d");
+
+	control_bar = document.querySelector("#control_bar");
+	control_bar.style.width = `${canvas.width}px`;
+
+	pause_signifier = document.querySelector("#pause_signifier");
+
+	draw_frame();
+	canvas.addEventListener("mousedown", draw);
+
 	step();
 }
 
-function step(): void {
+function draw(e: MouseEvent): void {
+	let pos = {
+		x: Math.floor((e.clientX - canvas_rect.left + 3)/pixel_size)-1,
+		y: Math.floor((e.clientY - canvas_rect.top + 3)/pixel_size)-1,
+	}
+
+	board[pos.y][pos.x] = board[pos.y][pos.x] ? 0 : 1;
 	draw_frame();
-	board = calculate_new_board();
+}
+
+function stop_start(): void {
+	paused = !paused;
+	pause_signifier.innerHTML = paused ? ": Paused" : ": Playing";
+}
+
+function step(): void {
+	if (!paused) {
+		board = calculate_new_board();
+		draw_frame();
+	}
 
 	setTimeout(() => {
 		step();
-	}, 1000)
+	}, 100)
 }
 
 function get_new_state(x: number, y: number): number {
@@ -37,8 +62,8 @@ function get_new_state(x: number, y: number): number {
 	let offset_y: number;
 	for (let i = 0; i < 3; i++) {
 		for (let j = 0; j < 3; j++) {
-			offset_x = ((x-1+j)+10)%10;
-			offset_y = ((y-1+i)+10)%10;
+			offset_x = ((x-1+j)+board_size)%board_size;
+			offset_y = ((y-1+i)+board_size)%board_size;
 
 			if (offset_x == x && offset_y == y) {
 				continue;
@@ -64,7 +89,7 @@ function get_new_state(x: number, y: number): number {
 
 function calculate_new_board(): Array<Array<number>> {
 	var new_board: Array<Array<number>> = new Array;
-	for (let y = 0, l = board.length; y < l; y++) {
+	for (let y = 0, l = board_size; y < l; y++) {
 		var row: Array<number> = new Array;
 		for (let x = 0; x < l; x++) {
 			row.push(get_new_state(x, y));
@@ -76,21 +101,21 @@ function calculate_new_board(): Array<Array<number>> {
 
 function fill_white(): void {
 	ctx.fillStyle = "white";
-	ctx.fillRect(0, 0, 500, 500);
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function draw_frame(): void {
 	fill_white();
-	for (let i = 0, l = board.length; i<l; i++) {
+	for (let i = 0, l = board_size; i<l; i++) {
 		for (let j = 0; j<l; j++) {
 			if (board[i][j] == 1) {
 				ctx.fillStyle = "white";
 			} else {
 				ctx.fillStyle = "black";
 			}
-			let x = j*50;
-			let y = i*50;
-			ctx.fillRect(x, y, 49, 49);
+			let x = j*pixel_size;
+			let y = i*pixel_size;
+			ctx.fillRect(x, y, pixel_size-1, pixel_size-1);
 		}
 	}
 }
