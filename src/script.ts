@@ -1,5 +1,5 @@
-const pixel_size: number = 50;
-const board_size: number = 10;
+const pixel_size: number = 25;
+const board_size: number = 20;
 
 var board: Array<Array<number>> = Array.from({length: board_size}, () => Array(board_size).fill(0));
 
@@ -7,6 +7,7 @@ var paused: boolean = true;
 
 var canvas: HTMLCanvasElement;
 var canvas_rect: DOMRect;
+var border_width: number;
 var ctx: CanvasRenderingContext2D;
 
 var pause_signifier: HTMLSpanElement;
@@ -17,6 +18,7 @@ window.onload = function () {
   canvas.width = board_size*pixel_size;
   canvas.height = board_size*pixel_size;
 	canvas_rect = canvas.getBoundingClientRect();
+	border_width = parseInt(getComputedStyle(canvas).getPropertyValue("border-width"));
   ctx = canvas.getContext("2d");
 
 	control_bar = document.querySelector("#control_bar");
@@ -32,8 +34,8 @@ window.onload = function () {
 
 function draw(e: MouseEvent): void {
 	let pos = {
-		x: Math.floor((e.clientX - canvas_rect.left)/pixel_size),
-		y: Math.floor((e.clientY - canvas_rect.top)/pixel_size),
+		x: Math.floor((e.pageX - canvas_rect.left - border_width)/pixel_size),
+		y: Math.floor((e.pageY - canvas_rect.top - border_width)/pixel_size),
 	}
 
 	board[pos.y][pos.x] = board[pos.y][pos.x] ? 0 : 1;

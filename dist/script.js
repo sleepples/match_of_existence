@@ -1,10 +1,11 @@
 "use strict";
-const pixel_size = 50;
-const board_size = 10;
+const pixel_size = 20;
+const board_size = 50;
 var board = Array.from({ length: board_size }, () => Array(board_size).fill(0));
 var paused = true;
 var canvas;
 var canvas_rect;
+var border_width;
 var ctx;
 var pause_signifier;
 var control_bar;
@@ -13,6 +14,7 @@ window.onload = function () {
     canvas.width = board_size * pixel_size;
     canvas.height = board_size * pixel_size;
     canvas_rect = canvas.getBoundingClientRect();
+    border_width = parseInt(getComputedStyle(canvas).getPropertyValue("border-width"));
     ctx = canvas.getContext("2d");
     control_bar = document.querySelector("#control_bar");
     control_bar.style.width = `${canvas.width}px`;
@@ -23,8 +25,8 @@ window.onload = function () {
 };
 function draw(e) {
     let pos = {
-        x: Math.floor((e.clientX - canvas_rect.left) / pixel_size),
-        y: Math.floor((e.clientY - canvas_rect.top) / pixel_size),
+        x: Math.floor((e.pageX - canvas_rect.left - border_width) / pixel_size),
+        y: Math.floor((e.pageY - canvas_rect.top - border_width) / pixel_size),
     };
     board[pos.y][pos.x] = board[pos.y][pos.x] ? 0 : 1;
     draw_frame();
