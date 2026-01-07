@@ -1,5 +1,5 @@
-const pixel_size: number = 25;
-const board_size: number = 25;
+const pixel_size: number = 50;
+const board_size: number = 10;
 
 var board: Array<Array<number>> = Array.from({length: board_size}, () => Array(board_size).fill(0));
 
@@ -14,9 +14,9 @@ var control_bar: HTMLDivElement;
 
 window.onload = function () {
   canvas = document.querySelector("#canvaas");
-	canvas_rect = canvas.getBoundingClientRect();
   canvas.width = board_size*pixel_size;
   canvas.height = board_size*pixel_size;
+	canvas_rect = canvas.getBoundingClientRect();
   ctx = canvas.getContext("2d");
 
 	control_bar = document.querySelector("#control_bar");
@@ -32,8 +32,8 @@ window.onload = function () {
 
 function draw(e: MouseEvent): void {
 	let pos = {
-		x: Math.floor((e.clientX - canvas_rect.left + 3)/pixel_size)-1,
-		y: Math.floor((e.clientY - canvas_rect.top + 3)/pixel_size)-1,
+		x: Math.floor((e.clientX - canvas_rect.left)/pixel_size),
+		y: Math.floor((e.clientY - canvas_rect.top)/pixel_size),
 	}
 
 	board[pos.y][pos.x] = board[pos.y][pos.x] ? 0 : 1;
