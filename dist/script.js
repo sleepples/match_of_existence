@@ -10,10 +10,10 @@ var ctx;
 var pause_signifier;
 var control_bar;
 window.onload = function () {
+    scrollTo(0, 0);
     canvas = document.querySelector("#canvaas");
     canvas.width = board_size * pixel_size;
     canvas.height = board_size * pixel_size;
-    canvas_rect = canvas.getBoundingClientRect();
     border_width = parseInt(getComputedStyle(canvas).getPropertyValue("border-width"));
     ctx = canvas.getContext("2d");
     control_bar = document.querySelector("#control_bar");
@@ -24,9 +24,10 @@ window.onload = function () {
     step();
 };
 function draw(e) {
+    canvas_rect = canvas.getBoundingClientRect();
     let pos = {
-        x: Math.floor((e.pageX - canvas_rect.left - border_width) / pixel_size),
-        y: Math.floor((e.pageY - canvas_rect.top - border_width) / pixel_size),
+        x: Math.floor((e.clientX - canvas_rect.left - border_width) / pixel_size),
+        y: Math.floor((e.clientY - canvas_rect.top - border_width) / pixel_size),
     };
     board[pos.y][pos.x] = board[pos.y][pos.x] ? 0 : 1;
     draw_frame();
